@@ -7,6 +7,7 @@ import Login from './components/Login.vue'
 import Main from './components/Main.vue'
 import Profile from './components/Profile.vue'
 import store from './store';
+import Friends from './components/Friends.vue'
 
 Vue.use(Vuelidate)
 Vue.use(VueRouter)
@@ -16,7 +17,8 @@ const routes = [
   { path:"/register", component: Register},
   { path:"/login", component: Login},
   { path:"/main", component: Main},
-  { path:"/profile", component: Profile}
+  { path:"/profile/:userName", component: Profile},
+  { path:"/friends", component: Friends}
 ]
 
 const router = new VueRouter({

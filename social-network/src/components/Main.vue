@@ -5,7 +5,7 @@
     <div class="container">
       <div class="col-md-12">
         <div class="panel panel-default posts mt-3">
-          <div v-for="post in allPosts" v-bind:key="post.id" class="panel-body post">
+          <div v-for="post in allFriendsPosts" v-bind:key="post.id" class="panel-body post">
             <section class="post-heading">
               <div class="row">
                 <div class="col-md-11">
@@ -73,7 +73,7 @@ export default {
   methods: {
     ...mapActions(['fetchUserFriendsPosts']),
   },
-  computed: mapGetters(["allPosts"]),
+  computed: mapGetters(["allFriendsPosts"]),
   created() {
     this.fetchUserFriendsPosts();
   }

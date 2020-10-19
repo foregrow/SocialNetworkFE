@@ -1,18 +1,18 @@
 import axios from 'axios';
 
 const state = {
-  posts: [
+  likes: [
 
   ]
 };
 
 const getters = {
-  allPosts: (state) => state.posts
+  allLikes: (state) => state.likes
 };
 
 const actions = {
-  async fetchUserFriendsPosts({ commit }) {
-    const response = await axios.get('http://localhost:9000/api/posts/userFriends/1');
+  async fetchPostLikes({ commit }) {
+    const response = await axios.get(`${server.baseUrl}/likes/post/${server.loggedInUser}`);
     console.log(response.data);
 
     commit('setPosts', response.data);

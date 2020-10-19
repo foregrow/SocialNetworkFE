@@ -1,6 +1,8 @@
 <template>
   <div>
     <Navbar />
+    <!-- <Loader /> -->
+    <!-- <div class="loader" v-if="!appReady">Loading...</div> -->
     <div class="container">
       <div class="row">
         <div class="col-md-12">
@@ -16,12 +18,12 @@
               </a>
             </div>
             <div class="profile-name">
-              <h2 v-if="singleUser!==undefined">{{singleUser.firstName}} {{singleUser.lastName}}</h2>
+              <!-- <h2 v-if="singleUser!==undefined">{{singleUser.firstName}} {{singleUser.lastName}}</h2> -->
             </div>
 
             <div class="fb-profile-block-menu">
               <div class="block-menu">
-                <button
+                <!-- <button
                   v-if="
                     singleUserFriendship !== undefined &&
                     (singleUserFriendship.user1_id == 1 &&
@@ -46,7 +48,7 @@
                   class="btn btn-primary pull-right mr-1 pt-1"
                 >
                   Cancel Request
-                </button>
+                </button> -->
               </div>
             </div>
           </div>
@@ -59,29 +61,53 @@
 
 <script>
 import Navbar from "./navbar/Navbar";
-import { mapGetters, mapActions } from "vuex";
+//import Loader from "../components/loader/Loader";
+
+//import { mapGetters, mapActions } from "vuex";
 //import server from '../util/server';
+//import axios from 'axios';
 
 export default {
   name: "Profile",
   components: {
-    Navbar: Navbar,
+    Navbar: Navbar
+
   },
   methods: {
-    ...mapActions(["fetchUserByUserName"]),
-    ...mapActions(["fetchUserFriendship"]),
+    //...mapActions(["fetchUserByUserName"]),
+    //...mapActions(["fetchUserFriendship"]),
+    //...mapActions(["INIT_APP"]),
   },
   computed: {
-    ...mapGetters(["singleUser"]),
-    ...mapGetters(["singleUserFriendship"]),
+    //...mapGetters(["appReady"]),
+    //...mapGetters(["singleUser"]),
+    //...mapGetters(["singleUserFriendship"]),
+    
   },
   created() {
-    let userName = this.$route.params.userName;
-    if(this.singleUserFriendship !== undefined)
-      this.fetchUserByUserName(userName);
-    
-    if(this.singleUser !== undefined)
-      this.fetchUserFriendship(this.singleUser.id);
+    //this.INIT_APP();
+    /*axios.interceptors.request.use(()=>{
+      this.$store.commit('READY_APP',true);
+    }, (error)=>{
+      this.$store.commit('READY_APP',false);
+
+      return Promise.reject(error);
+    });
+    axios.interceptors.response.use((response)=>{
+      console.log(response)
+      this.$store.commit('READY_APP',false);
+      return response;
+    }, (err)=>{
+      return new Promise(()=>{
+        this.$store.dispatch('login').then(()=>{
+          this.$router.push('/login')
+        })
+        throw err;
+      });
+    });*/
+    //let userName = this.$route.params.userName;
+    //this.fetchUserByUserName(userName);
+    //this.fetchUserFriendship(this.singleUser.id);
     
     
 
@@ -177,5 +203,14 @@ export default {
 }
 .block-menu ul li:first-child a {
   border-left: 1px solid #e9eaed;
+}
+
+.loader {
+  background: #eee;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
 }
 </style>

@@ -10,10 +10,14 @@
   "dependencies": {
     "axios": "^0.20.0",
     "core-js": "^3.6.5",
+    "i": "^0.3.6",
     "router": "^1.3.5",
     "vue": "^2.6.11",
     "vue-router": "^3.4.6",
     "vuelidate": "^0.7.5",
+    "vuelity": "^2.0.50",
+    "vuetify": "^2.3.14",
+    "vuetify-loader": "^1.6.0",
     "vuex": "^3.5.1"
   },
   "devDependencies": {
@@ -23,6 +27,7 @@
     "babel-eslint": "^10.1.0",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^6.2.2",
+    "vue-cli-plugin-vuetify": "~2.0.7",
     "vue-template-compiler": "^2.6.11"
   },
   "eslintConfig": {

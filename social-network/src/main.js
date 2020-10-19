@@ -8,6 +8,7 @@ import Main from './components/Main.vue'
 import Profile from './components/Profile.vue'
 import store from './store';
 import Friends from './components/Friends.vue'
+import Vuetify from 'vuetify'
 
 Vue.use(Vuelidate)
 Vue.use(VueRouter)
@@ -23,10 +24,31 @@ const routes = [
 
 const router = new VueRouter({
   routes,
-  mode: 'history'
+  mode: 'history',
 });
+
+/*router.beforeEach((to,from,next)=>{
+  function proceed(){
+    next();
+  }
+  if(!store.state.appReady){
+    store.watch(
+      (state)=> state.appReady,
+      (ready)=> {
+        if(ready){
+          proceed();
+        }
+      }
+    )
+  }else {
+    proceed();
+  }
+})*/
+
+
 new Vue({
   render: h => h(App),
   router,
-  store
+  store,
+  vuetify: Vuetify
 }).$mount('#app')

@@ -7,16 +7,23 @@ const state = {
   ],
   userFriendship: [
 
-  ]
+  ],
+  //appReady: false,
 };
 
 const getters = {
   allUsersFriendships: (state) => state.usersFriendships,
-  singleUserFriendship: (state) => state.userFriendship
+  singleUserFriendship: (state) => state.userFriendship,
+  //appReady: (state) => state.appReady
 
 };
 
 const actions = {
+  /*INIT_APP({commit}){
+    setTimeout(function(){
+      commit("READY_APP");
+    }, 5000);
+  },*/
   async fetchUserFriendships({ commit }) {
     const response = await axios.get(`${server.baseUrl}/friendships/user/${server.loggedInUser}`);
     console.log(response.data);
@@ -40,6 +47,9 @@ const actions = {
 };
 
 const mutations = {
+  /*READY_APP(state){
+    state.appReady = true;
+  },*/
   setUserFriendships: (state, usersFriendships) => (state.usersFriendships = usersFriendships),
   setUserFriendship: (state, userFriendship) => (state.userFriendship = userFriendship),
 };

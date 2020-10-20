@@ -30,20 +30,30 @@ const actions = {
 
     commit('setUserFriendships', response.data);
   },
-  async sendFriendshipRequest({ commit }, user1_id,user2_id) {
-    const response = await axios.post(`${server.baseUrl}/api/friendships/add`, 
-    {id:0,user1_id,user2_id,friendshipDate: Date.now(), accepted:false});
-    console.log(response.data);
-
-    commit('setFriendshipRequest', response.data);
+  async sendFriendshipRequest({ commit },user2_id) {
+    let object = {"id":0,"user1_id":1,"user2_id":user2_id,"friendshipDate":Date.now(),"accepted":false};
+    console.log(object);
+    return axios.post(`${server.baseUrl}/friendships/add`, object).then((res) => {
+      alert('Friend request successfully sent! ')
+      commit('newFriendshipRequest',res.data);
+      return res.data;
+    })
+    .catch((err) => {
+      console.log(err);
+    });
   },
   async fetchUserFriendship({ commit },friendId) {
-    const response = 
-      await axios.get(`${server.baseUrl}/friendships/userFriend/${server.loggedInUser}/${friendId}`);
-    console.log(response.data);
-
-    commit('setUserFriendship', response.data);
-  }
+    
+    return axios.get(`${server.baseUrl}/friendships/userFriend/${server.loggedInUser}/${friendId}`).then((res) => {
+      //console.log(res.data);
+      commit('setUserFriendship',res.data);
+      return res.data;
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+    
+  },
 };
 
 const mutations = {
@@ -52,6 +62,7 @@ const mutations = {
   },*/
   setUserFriendships: (state, usersFriendships) => (state.usersFriendships = usersFriendships),
   setUserFriendship: (state, userFriendship) => (state.userFriendship = userFriendship),
+  newFriendshipRequest: (state, friendship) => state.userFriendship.unshift(friendship)
 };
 
 export default {

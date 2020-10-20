@@ -36,7 +36,9 @@ export default {
   }),
   methods: {
     login() {
-      this.$store.dispatch('users/loginUser') //i proslediti this.user
+      this.$store.dispatch('loginUser') //i proslediti this.user
+      this.$router.push("/main");
+
     }
   }
 }

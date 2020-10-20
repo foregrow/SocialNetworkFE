@@ -62,7 +62,7 @@
 
 <script>
 import Navbar from "./navbar/Navbar";
-import axios from "axios";
+//import axios from "axios";
 import { mapGetters, mapActions } from "vuex";
 
 export default {
@@ -75,8 +75,9 @@ export default {
   },
   computed: mapGetters(["allFriendsPosts"]),
   created() {
-      axios.defaults.headers.common["Authorization"] = "Bearer " + localStorage.getItem("access_token");
-
+      this.fetchUserFriendsPosts();
+      //axios.defaults.headers.common["Authorization"] = "Bearer " + localStorage.getItem("access_token");
+      console.log("Bearer " + localStorage.getItem("access_token"));
   }
 };
 </script>

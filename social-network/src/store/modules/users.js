@@ -1,5 +1,6 @@
 import axios from 'axios';
 import server from '../../util/server';
+//import router from 'vue-router';
 
 const state = {
   userCred: {}
@@ -31,13 +32,12 @@ const actions = {
     .then( res=>{
       if(res.data.access_token){
         //save
-        
+        //console.log(res.data.access_token)
         localStorage.setItem(
           "access_token",
           res.data.access_token
         )
-
-        window.location.replace('/main');
+        //indow.location.replace('/main');
       }
     })
   },
@@ -52,11 +52,11 @@ const actions = {
     commit('setSuggestedFriends',response.data);
   },
   async fetchUserByUserName({ commit }, userName){
-    await axios.get(`${server.baseUrl}/users/userName/${userName}`)
+    return axios.get(`${server.baseUrl}/users/userName/${userName}`)
     .then((res) => {
-      console.log(res.data);
+      //console.log(res.data);
       commit('setUser',res.data);
-
+      return res.data;
     })
     .catch((err) => {
       console.log(err);
@@ -76,7 +76,7 @@ const mutations = {
 };
 
 export default {
-  namespaced: true,
+  //namespaced: true,
   state,
   getters,
   actions,

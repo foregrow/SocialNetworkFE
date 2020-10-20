@@ -18,39 +18,92 @@
               </a>
             </div>
             <div class="profile-name">
-              <!-- <h2 v-if="singleUser!==undefined">{{singleUser.firstName}} {{singleUser.lastName}}</h2> -->
+              <h2 v-if="singleUser !== undefined">
+                {{ singleUser.firstName }} {{ singleUser.lastName }}
+              </h2>
             </div>
 
             <div class="fb-profile-block-menu">
               <div class="block-menu">
-                <!-- <button
+                <button
                   v-if="
-                    singleUserFriendship !== undefined &&
-                    (singleUserFriendship.user1_id == 1 &&
-                    singleUserFriendship.user2_id == singleUser.id ||
-                    singleUserFriendship.user2_id == 1 &&
-                    singleUserFriendship.user1_id == singleUser.id) &&
+                    singleUserFriendship === null && singleUser.id != 1 //umesto 1 treba id ulogovanog
+                  "
+                  @click="addFriend($event,singleUser.id)" 
+                  class="btn btn-primary pull-right"
+                >
+                  Add Friend
+                </button>
+                <button
+                  v-if="
+                    singleUserFriendship !== null &&
+                    !singleUserFriendship.accepted
+                  "
+                  class="btn btn-primary pull-right mr-1 pt-1"
+                >
+                  Cancel Request
+                </button>
+                <button
+                  v-if="
+                    singleUserFriendship !== null &&
                     singleUserFriendship.accepted
                   "
                   class="btn btn-primary pull-right mr-1 pt-1"
                 >
                   Remove Friend
                 </button>
-                <button
-                  v-if="
-                    singleUserFriendship !== undefined &&
-                    (singleUserFriendship.user1_id == 1 &&
-                    singleUserFriendship.user2_id == singleUser.id ||
-                    singleUserFriendship.user2_id == 1 &&
-                    singleUserFriendship.user1_id == singleUser.id) &&
-                    !singleUserFriendship.accepted
-                  "
-                  class="btn btn-primary pull-right mr-1 pt-1"
-                >
-                  Cancel Request
-                </button> -->
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      v-if="
+        (singleUserFriendship === null && singleUser.id == 1) ||
+        (singleUserFriendship !== null && singleUserFriendship.accepted)
+      "
+      class="container mt-5"
+    >
+      <div class="col-md-12">
+        <div class="panel panel-default posts mt-3">
+          <div
+            v-for="post in allUserPosts"
+            v-bind:key="post.id"
+            class="panel-body post mt-3"
+          >
+            <section class="post-heading">
+              <div class="row">
+                <div class="col-md-11">
+                  <div class="media">
+                    <div class="media-body">
+                      <a href="#" class="anchor-time">{{ post.postDate }}</a>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-1">
+                  <a href="#"
+                    ><i class="glyphicon glyphicon-chevron-down"></i
+                  ></a>
+                </div>
+              </div>
+            </section>
+            <section class="post-body">
+              <p>{{ post.text }}</p>
+            </section>
+            <section class="post-footer">
+              <hr />
+              <div class="post-footer-option container">
+                <ul class="list-unstyled">
+                  <li>
+                    <a href="#"
+                      ><i class="glyphicon glyphicon-thumbs-up"></i> Like</a
+                    >
+                  </li>
+                </ul>
+              </div>
+            </section>
           </div>
         </div>
       </div>
@@ -63,26 +116,36 @@
 import Navbar from "./navbar/Navbar";
 //import Loader from "../components/loader/Loader";
 
-//import { mapGetters, mapActions } from "vuex";
+import { mapGetters, mapActions } from "vuex";
 //import server from '../util/server';
 //import axios from 'axios';
 
 export default {
   name: "Profile",
   components: {
-    Navbar: Navbar
-
+    Navbar: Navbar,
   },
   methods: {
-    //...mapActions(["fetchUserByUserName"]),
-    //...mapActions(["fetchUserFriendship"]),
+    ...mapActions(["fetchUserByUserName"]),
+    ...mapActions(["fetchUserFriendship"]),
+    ...mapActions(["fetchUserPosts"]),
+    ...mapActions(["sendFriendshipRequest"]),
     //...mapActions(["INIT_APP"]),
+    addFriend(e,user2_id){
+      e.preventDefault();
+      //let loggedInUser = 1;
+      console.log(user2_id);
+        this.sendFriendshipRequest(user2_id).then(() => {
+          this.$router.go();
+
+      });
+    }
   },
   computed: {
     //...mapGetters(["appReady"]),
-    //...mapGetters(["singleUser"]),
-    //...mapGetters(["singleUserFriendship"]),
-    
+    ...mapGetters(["singleUser"]),
+    ...mapGetters(["singleUserFriendship"]),
+    ...mapGetters(["allUserPosts"]),
   },
   created() {
     //this.INIT_APP();
@@ -105,12 +168,19 @@ export default {
         throw err;
       });
     });*/
-    //let userName = this.$route.params.userName;
-    //this.fetchUserByUserName(userName);
-    //this.fetchUserFriendship(this.singleUser.id);
-    
-    
-
+    let userName = this.$route.params.userName;
+    this.fetchUserByUserName(userName).then((resU) => {
+      this.fetchUserFriendship(resU.id).then((resF) => {
+        if (
+          (resF === null && resU.id == 1) ||
+          (resF !== null && resF.accepted)
+        ) {
+          //umesto 1 treba username ulogovanog
+          this.fetchUserPosts(resU.id);
+          //this.user2_id = resU.id;
+        }
+      });
+    });
   },
 };
 </script>

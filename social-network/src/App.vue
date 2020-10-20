@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+//import axios from 'axios';
 export default {
   name: "App",
   components: {},
@@ -15,8 +15,9 @@ export default {
     };
   },
   created(){
-    
-    axios.defaults.headers.common["Authorization"] = "Bearer " + localStorage.getItem("access_token");
+    //axios.defaults.headers.common["Authorization"] = "Bearer " + localStorage.getItem("access_token");
+      //console.log("Bearer " + localStorage.getItem("access_token"));
+   // axios.defaults.headers.common["Authorization"] = "Bearer " + localStorage.getItem("access_token");
   }
 };
 </script>

@@ -29,7 +29,7 @@
                   v-if="
                     singleUserFriendship === null && singleUser.id != 1 //umesto 1 treba id ulogovanog
                   "
-                  @click="addFriend($event,singleUser.id)" 
+                  @click="onAddFriend($event,singleUser.id)" 
                   class="btn btn-primary pull-right"
                 >
                   Add Friend
@@ -37,18 +37,34 @@
                 <button
                   v-if="
                     singleUserFriendship !== null &&
-                    !singleUserFriendship.accepted
+                    !singleUserFriendship.accepted &&
+                    (singleUserFriendship.user1_id===1 && //loggedInUser umesto 1
+                    singleUserFriendship.user2_id===singleUser.id)
                   "
-                  class="btn btn-primary pull-right mr-1 pt-1"
+                  @click="onCancelRequest($event,singleUser.id)" 
+                  class="btn btn-danger pull-right mr-1 pt-1"
                 >
                   Cancel Request
                 </button>
                 <button
                   v-if="
                     singleUserFriendship !== null &&
+                    !singleUserFriendship.accepted &&
+                    (singleUserFriendship.user2_id===1 && //loggedInUser umesto 1
+                    singleUserFriendship.user1_id===singleUser.id)
+                  "
+                  @click="onAcceptRequest($event,singleUser.id)" 
+                  class="btn btn-primary pull-right mr-1 pt-1"
+                >
+                  Accept Request
+                </button>
+                <button
+                  v-if="
+                    singleUserFriendship !== null &&
                     singleUserFriendship.accepted
                   "
-                  class="btn btn-primary pull-right mr-1 pt-1"
+                  @click="onRemoveFriend($event,singleUser.id)" 
+                  class="btn btn-danger pull-right mr-1 pt-1"
                 >
                   Remove Friend
                 </button>
@@ -130,8 +146,10 @@ export default {
     ...mapActions(["fetchUserFriendship"]),
     ...mapActions(["fetchUserPosts"]),
     ...mapActions(["sendFriendshipRequest"]),
+    ...mapActions(["removeFriend"]),
+    ...mapActions(["cancelRequest"]),
     //...mapActions(["INIT_APP"]),
-    addFriend(e,user2_id){
+    onAddFriend(e,user2_id){
       e.preventDefault();
       //let loggedInUser = 1;
       console.log(user2_id);
@@ -139,7 +157,23 @@ export default {
           this.$router.go();
 
       });
-    }
+    },
+    onRemoveFriend(e,user2_id){
+      e.preventDefault();
+      console.log(user2_id);
+      this.removeFriend(user2_id).then(() => {
+          this.$router.go();
+
+      });
+    },
+    onCancelRequest(e,user2_id){
+      e.preventDefault();
+      console.log(user2_id);
+      this.cancelRequest(user2_id).then(() => {
+          this.$router.go();
+
+      });
+    },
   },
   computed: {
     //...mapGetters(["appReady"]),

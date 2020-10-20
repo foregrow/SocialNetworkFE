@@ -6,14 +6,14 @@ import Register from './components/Register.vue'
 import Login from './components/Login.vue'
 import Main from './components/Main.vue'
 import Profile from './components/Profile.vue'
-import store from './store';
+import store from './store'
 import Friends from './components/Friends.vue'
 import Vuetify from 'vuetify'
-
+import DateFilter from './format/date'
 Vue.use(Vuelidate)
 Vue.use(VueRouter)
 Vue.config.productionTip = false
-
+Vue.filter('date',DateFilter)
 const routes = [
   { path:"/register", component: Register},
   { path:"/login", component: Login},

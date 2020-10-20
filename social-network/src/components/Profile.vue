@@ -25,6 +25,16 @@
 
             <div class="fb-profile-block-menu">
               <div class="block-menu">
+                <input type="file" @change="onPicSelected">
+                <button
+                  v-if="
+                    singleUser.id == 1 //umesto 1 treba id ulogovanog
+                  "
+                  @click="onPicUpload"
+                  class="btn btn-primary pull-right"
+                >
+                  Upload new image
+                </button>
                 <button
                   v-if="
                     singleUserFriendship === null && singleUser.id != 1 //umesto 1 treba id ulogovanog
@@ -53,8 +63,20 @@
                     (singleUserFriendship.user2_id===1 && //loggedInUser umesto 1
                     singleUserFriendship.user1_id===singleUser.id)
                   "
+                  @click="onCancelRequest($event,singleUser.id)" 
+                  class="btn btn-danger pull-right ml-1mr-1 pt-1"
+                >
+                  Reject Request
+                </button>
+                <button
+                  v-if="
+                    singleUserFriendship !== null &&
+                    !singleUserFriendship.accepted &&
+                    (singleUserFriendship.user2_id===1 && //loggedInUser umesto 1
+                    singleUserFriendship.user1_id===singleUser.id)
+                  "
                   @click="onAcceptRequest($event,singleUser.id)" 
-                  class="btn btn-primary pull-right mr-1 pt-1"
+                  class="btn btn-primary pull-right mr-auto pt-1"
                 >
                   Accept Request
                 </button>
@@ -75,6 +97,20 @@
       </div>
     </div>
 
+     <div class="container mt-5" v-if="singleUser.id === 1"> <!--umesto keca id ulogovanog -->
+      <div>
+        <form @submit="onAddPost($event)">
+          <div class="form-group">
+              <textarea v-model="descText" placeholder="Type something here.." name="text" cols="30" rows="5" class="form-control"></textarea>
+          </div>
+          <div class="form-grup">
+            <button type="submit" class="btn btn-primary">Post now!</button>
+           <!-- <button type="submit" class="btn btn-danger">Cancel</button> -->
+
+          </div>
+        </form>
+      </div>
+    </div>
     <div
       v-if="
         (singleUserFriendship === null && singleUser.id == 1) ||
@@ -94,7 +130,7 @@
                 <div class="col-md-11">
                   <div class="media">
                     <div class="media-body">
-                      <a href="#" class="anchor-time">{{ post.postDate }}</a>
+                      <a href="#" class="anchor-time">{{ post.postDate| date }}</a>
                     </div>
                   </div>
                 </div>
@@ -133,13 +169,19 @@ import Navbar from "./navbar/Navbar";
 //import Loader from "../components/loader/Loader";
 
 import { mapGetters, mapActions } from "vuex";
-//import server from '../util/server';
-//import axios from 'axios';
+import server from '../util/server';
+import axios from 'axios';
 
 export default {
   name: "Profile",
   components: {
     Navbar: Navbar,
+  },
+  data(){
+    return {
+      descText:"",
+      selectedPicture: null
+    }
   },
   methods: {
     ...mapActions(["fetchUserByUserName"]),
@@ -148,6 +190,8 @@ export default {
     ...mapActions(["sendFriendshipRequest"]),
     ...mapActions(["removeFriend"]),
     ...mapActions(["cancelRequest"]),
+    ...mapActions(["acceptRequest"]),
+    ...mapActions(["addPost"]),
     //...mapActions(["INIT_APP"]),
     onAddFriend(e,user2_id){
       e.preventDefault();
@@ -174,7 +218,34 @@ export default {
 
       });
     },
+    onAcceptRequest(e,user1_id){
+      e.preventDefault();
+      console.log(user1_id);
+      this.acceptRequest(user1_id).then(() => {
+          this.$router.go();
+
+      });
+    },
+    onAddPost(e){
+      e.preventDefault();
+      this.addPost(this.descText);
+      this.$router.go();
+    },
+    onPicSelected(e){
+      console.log(e.target.files[0]);
+      this.selectedPicture = e.target.files[0];
+    },
+    onPicUpload(){
+      const fd = new FormData();
+      fd.append('image',this.selectedPicture, this.selectedPicture.name);
+      console.log(fd.get('image'));
+      axios.post(`${server.baseUrl}/photos/add/${1}`, fd
+      ).then(res=>{
+        console.log(res);
+      });
+    },
   },
+  
   computed: {
     //...mapGetters(["appReady"]),
     ...mapGetters(["singleUser"]),

@@ -65,6 +65,17 @@ const actions = {
       console.log(err);
     });
   },
+  async acceptRequest({commit},user1_id){
+    let user2_id = 1; //loggedinuser
+    return axios.put(`${server.baseUrl}/friendships/accept/${user1_id}/${user2_id}`).then((res) => {
+      alert('Friend request successfully accepted! ')
+      commit('acceptRequest',res.data);
+      return res.data;
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+  },
   async fetchUserFriendship({ commit },friendId) {
     
     return axios.get(`${server.baseUrl}/friendships/userFriend/${server.loggedInUser}/${friendId}`).then((res) => {

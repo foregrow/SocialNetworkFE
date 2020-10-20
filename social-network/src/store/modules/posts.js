@@ -32,11 +32,28 @@ const actions = {
       console.log(err);
     });
   },
+  async addPost({ commit },text){
+    let object = {
+      "id":0,
+      "text":text,
+      "userId":1, //loggedInUserId
+      "postDate":Date.now()
+    }
+    return axios.post(`${server.baseUrl}/posts/add`,object).then((res) => {
+      console.log(res.data);
+      commit('newPost',res.data);
+      return res.data;
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+  }
 };
 
 const mutations = {
   setFriendsPosts: (state, friendsPosts) => (state.friendsPosts = friendsPosts),
-  setUserPosts: (state, userPosts) => (state.userPosts = userPosts)
+  setUserPosts: (state, userPosts) => (state.userPosts = userPosts),
+  newPost:(state, post) => state.userPosts.unshift(post)
 
 };
 

@@ -3,8 +3,6 @@ import server from '../../util/server';
 //import router from 'vue-router';
 
 const state = {
-  userCred: {}
-  ,
   friends: [
     
   ],
@@ -14,7 +12,8 @@ const state = {
   user: [
 
   ],
-  appReady: false
+  appReady: false,
+
 };
 
 const getters = {
@@ -26,9 +25,9 @@ const getters = {
 };
 
 const actions = {
-  loginUser(/*{}, user*/){
+  loginUser(userCred){
     axios
-    .post(`${server.base}/authenticate`)//proslediti un&pw
+    .post(`${server.base}/authenticate`,userCred)//proslediti un&pw
     .then( res=>{
       if(res.data.access_token){
         //save
@@ -37,8 +36,9 @@ const actions = {
           "access_token",
           res.data.access_token
         )
-        //indow.location.replace('/main');
       }
+    }).catch(err=>{
+      console.log(err);
     })
   },
   async fetchUsersFriends({ commit }){

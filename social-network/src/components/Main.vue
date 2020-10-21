@@ -67,7 +67,7 @@ export default {
   created() {
       this.fetchUserFriendsPosts();
       //axios.defaults.headers.common["Authorization"] = "Bearer " + localStorage.getItem("access_token");
-      console.log("Bearer " + localStorage.getItem("access_token"));
+      //console.log("Bearer " + localStorage.getItem("access_token"));
   }
 };
 </script>

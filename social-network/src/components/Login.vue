@@ -5,12 +5,12 @@
           <h2 class="h2">Login</h2>
 
           <div class="form-group">
-            <input v-model="user.userName"
+            <input v-model="userCred.userName"
             type="text" placeholder="Username" class="form-control" />
           </div>
 
           <div class="form-group">
-            <input v-model="user.password"
+            <input v-model="userCred.password"
               type="password"
               placeholder="Password"
               class="form-control"
@@ -26,19 +26,23 @@
 </template>
 
 <script>
+import axios from 'axios'
+import server from '../util/server'
 export default {
   name: 'Login',
-  data: ()=> ({
-    user: {
-      userName: "",
-      password: ""
-    }
-  }),
+  data () {
+    return {
+      userCred:{
+        userName: "",
+        password: ""
+      }
+    }  
+  },
   methods: {
-    login() {
-      this.$store.dispatch('loginUser') //i proslediti this.user
-      this.$router.push("/main");
-
+    async login() {
+      //this.$store.dispatch('loginUser',this.userCred) //i proslediti this.user
+      //this.$router.push("main");
+      axios.post(`${server.base}/authenticate`,this.userCred)
     }
   }
 }

@@ -11,11 +11,11 @@
             <div class="profile-img">
               <a href="#">
                 <img
-                  src="https://bootdey.com/img/Content/avatar/avatar7.png"
-                  alt=""
-                  title=""
+                  v-on:src="imagePreview"
                 />
               </a>
+         <!-- /home/praksa/git_local/novalite_gitlab/soc/./public/images/profile_pic_1.png -->
+
             </div>
             <div class="profile-name">
               <h2 v-if="singleUser !== undefined">
@@ -25,13 +25,14 @@
 
             <div class="fb-profile-block-menu">
               <div class="block-menu">
-                <input type="file" @change="onPicSelected">
+                <input class="pull-left" type="file" accept="image/*" @change="onPicSelected">
                 <button
                   v-if="
                     singleUser.id == 1 //umesto 1 treba id ulogovanog
+                    && selectedPicture
                   "
                   @click="onPicUpload"
-                  class="btn btn-primary pull-right"
+                  class="btn btn-primary pull-left"
                 >
                   Upload new image
                 </button>
@@ -180,7 +181,9 @@ export default {
   data(){
     return {
       descText:"",
-      selectedPicture: null
+      selectedPicture: null,
+      imagePreview: "",
+
     }
   },
   methods: {
@@ -192,6 +195,8 @@ export default {
     ...mapActions(["cancelRequest"]),
     ...mapActions(["acceptRequest"]),
     ...mapActions(["addPost"]),
+    ...mapActions(["fetchUserPhoto"]),
+    
     //...mapActions(["INIT_APP"]),
     onAddFriend(e,user2_id){
       e.preventDefault();
@@ -232,16 +237,18 @@ export default {
       this.$router.go();
     },
     onPicSelected(e){
-      console.log(e.target.files[0]);
       this.selectedPicture = e.target.files[0];
     },
     onPicUpload(){
       const fd = new FormData();
       fd.append('image',this.selectedPicture, this.selectedPicture.name);
-      console.log(fd.get('image'));
       axios.post(`${server.baseUrl}/photos/add/${1}`, fd
       ).then(res=>{
         console.log(res);
+        
+
+      }).catch(err=>{
+        console.log(err);
       });
     },
   },
@@ -251,6 +258,8 @@ export default {
     ...mapGetters(["singleUser"]),
     ...mapGetters(["singleUserFriendship"]),
     ...mapGetters(["allUserPosts"]),
+   ...mapGetters(["singlePhoto"]),
+
   },
   created() {
     //this.INIT_APP();
@@ -275,6 +284,11 @@ export default {
     });*/
     let userName = this.$route.params.userName;
     this.fetchUserByUserName(userName).then((resU) => {
+      this.fetchUserPhoto(resU.id).then((resP)=>{
+        console.log(resP);
+        console.log(resP.path);
+        //this.imagePreview = URL.createObjectURL(resP.path)
+      });
       this.fetchUserFriendship(resU.id).then((resF) => {
         if (
           (resF === null && resU.id == 1) ||

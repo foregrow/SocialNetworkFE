@@ -11,7 +11,7 @@
             <div class="profile-img">
               <a href="#">
                 <img
-                  v-on:src="imagePreview"
+                  v-bind:src="imagePreview"
                 />
               </a>
          <!-- /home/praksa/git_local/novalite_gitlab/soc/./public/images/profile_pic_1.png -->
@@ -25,7 +25,9 @@
 
             <div class="fb-profile-block-menu">
               <div class="block-menu">
-                <input class="pull-left" type="file" accept="image/*" @change="onPicSelected">
+                <input v-if="
+                    singleUser.id == 1 //umesto 1 treba id ulogovanog
+                  " class="pull-left" type="file" accept="image/*" @change="onPicSelected">
                 <button
                   v-if="
                     singleUser.id == 1 //umesto 1 treba id ulogovanog
@@ -182,7 +184,7 @@ export default {
     return {
       descText:"",
       selectedPicture: null,
-      imagePreview: "",
+      imagePreview: "https://bootdey.com/img/Content/avatar/avatar7.png",
 
     }
   },
@@ -246,7 +248,14 @@ export default {
       ).then(res=>{
         console.log(res);
         
+        if(res!==undefined){
+          this.fetchUserPhoto(this.singleUser.id).then((resP)=>{
 
+          if(resP!==undefined)
+            this.imagePreview = resP.path
+            this.$router.go();
+          });
+        }
       }).catch(err=>{
         console.log(err);
       });
@@ -258,7 +267,7 @@ export default {
     ...mapGetters(["singleUser"]),
     ...mapGetters(["singleUserFriendship"]),
     ...mapGetters(["allUserPosts"]),
-   ...mapGetters(["singlePhoto"]),
+    ...mapGetters(["singlePhoto"]),
 
   },
   created() {
@@ -285,9 +294,11 @@ export default {
     let userName = this.$route.params.userName;
     this.fetchUserByUserName(userName).then((resU) => {
       this.fetchUserPhoto(resU.id).then((resP)=>{
-        console.log(resP);
-        console.log(resP.path);
-        //this.imagePreview = URL.createObjectURL(resP.path)
+
+        if(resP!==undefined)
+          this.imagePreview = resP.path
+      }).catch((e)=>{
+        console.log(e);
       });
       this.fetchUserFriendship(resU.id).then((resF) => {
         if (

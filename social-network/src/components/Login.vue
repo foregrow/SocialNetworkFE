@@ -26,23 +26,35 @@
 </template>
 
 <script>
-import axios from 'axios'
-import server from '../util/server'
+//import axios from 'axios'
+//import server from '../util/server'
+import { mapActions, mapGetters } from "vuex";
 export default {
   name: 'Login',
   data () {
     return {
       userCred:{
+        id: 0,
         userName: "",
         password: ""
       }
     }  
   },
+  computed:{
+    ...mapGetters({
+      isAuthenticated: 'isAuthenticated',
+      getLoginUserInfo: 'getLoginUserInfo'
+      }),
+  },
   methods: {
-    async login() {
-      //this.$store.dispatch('loginUser',this.userCred) //i proslediti this.user
-      //this.$router.push("main");
-      axios.post(`${server.base}/authenticate`,this.userCred)
+    ...mapActions(["loginUser"]),
+    login() {
+      this.loginUser(this.userCred);
+      //alert(this.getLoginUserInfo.userName);
+      if(this.isAuthenticated && this.getLoginUserInfo){
+        this.$router.push("main");
+      }
+      
     }
   }
 }

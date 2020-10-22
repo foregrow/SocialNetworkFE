@@ -1,8 +1,6 @@
 <template>
-  <div>
+  <div v-if="getLoginUserInfo !== null">
     <Navbar />
-    <!-- <Loader /> -->
-    <!-- <div class="loader" v-if="!appReady">Loading...</div> -->
     <div class="container">
       <div class="row">
         <div class="col-md-12">
@@ -14,7 +12,6 @@
                   v-bind:src="imagePreview"
                 />
               </a>
-         <!-- /home/praksa/git_local/novalite_gitlab/soc/./public/images/profile_pic_1.png -->
 
             </div>
             <div class="profile-name">
@@ -26,11 +23,11 @@
             <div class="fb-profile-block-menu">
               <div class="block-menu">
                 <input v-if="
-                    singleUser.id == 1 //umesto 1 treba id ulogovanog
+                    singleUser.id == getLoginUserInfo.id
                   " class="pull-left" type="file" accept="image/*" @change="onPicSelected">
                 <button
                   v-if="
-                    singleUser.id == 1 //umesto 1 treba id ulogovanog
+                    singleUser.id == getLoginUserInfo.id
                     && selectedPicture
                   "
                   @click="onPicUpload"
@@ -40,7 +37,7 @@
                 </button>
                 <button
                   v-if="
-                    singleUserFriendship === null && singleUser.id != 1 //umesto 1 treba id ulogovanog
+                    singleUserFriendship === null && singleUser.id != getLoginUserInfo.id
                   "
                   @click="onAddFriend($event,singleUser.id)" 
                   class="btn btn-primary pull-right"
@@ -51,7 +48,7 @@
                   v-if="
                     singleUserFriendship !== null &&
                     !singleUserFriendship.accepted &&
-                    (singleUserFriendship.user1_id===1 && //loggedInUser umesto 1
+                    (singleUserFriendship.user1_id===getLoginUserInfo.id && 
                     singleUserFriendship.user2_id===singleUser.id)
                   "
                   @click="onCancelRequest($event,singleUser.id)" 
@@ -63,7 +60,7 @@
                   v-if="
                     singleUserFriendship !== null &&
                     !singleUserFriendship.accepted &&
-                    (singleUserFriendship.user2_id===1 && //loggedInUser umesto 1
+                    (singleUserFriendship.user2_id===getLoginUserInfo.id &&
                     singleUserFriendship.user1_id===singleUser.id)
                   "
                   @click="onCancelRequest($event,singleUser.id)" 
@@ -75,7 +72,7 @@
                   v-if="
                     singleUserFriendship !== null &&
                     !singleUserFriendship.accepted &&
-                    (singleUserFriendship.user2_id===1 && //loggedInUser umesto 1
+                    (singleUserFriendship.user2_id===getLoginUserInfo.id && 
                     singleUserFriendship.user1_id===singleUser.id)
                   "
                   @click="onAcceptRequest($event,singleUser.id)" 
@@ -100,7 +97,7 @@
       </div>
     </div>
 
-     <div class="container mt-5" v-if="singleUser.id === 1"> <!--umesto keca id ulogovanog -->
+     <div class="container mt-5" v-if="singleUser.id === getLoginUserInfo.id"> 
       <div>
         <form @submit="onAddPost($event)">
           <div class="form-group">
@@ -116,7 +113,7 @@
     </div>
     <div
       v-if="
-        (singleUserFriendship === null && singleUser.id == 1) ||
+        (singleUserFriendship === null && singleUser.id == getLoginUserInfo.id) ||
         (singleUserFriendship !== null && singleUserFriendship.accepted)
       "
       class="container mt-5"
@@ -199,11 +196,8 @@ export default {
     ...mapActions(["addPost"]),
     ...mapActions(["fetchUserPhoto"]),
     
-    //...mapActions(["INIT_APP"]),
     onAddFriend(e,user2_id){
       e.preventDefault();
-      //let loggedInUser = 1;
-      console.log(user2_id);
         this.sendFriendshipRequest(user2_id).then(() => {
           this.$router.go();
 
@@ -213,13 +207,12 @@ export default {
       e.preventDefault();
       console.log(user2_id);
       this.removeFriend(user2_id).then(() => {
-          this.$router.go();
+          //this.$router.go();
 
       });
     },
     onCancelRequest(e,user2_id){
       e.preventDefault();
-      console.log(user2_id);
       this.cancelRequest(user2_id).then(() => {
           this.$router.go();
 
@@ -227,7 +220,6 @@ export default {
     },
     onAcceptRequest(e,user1_id){
       e.preventDefault();
-      console.log(user1_id);
       this.acceptRequest(user1_id).then(() => {
           this.$router.go();
 
@@ -244,7 +236,7 @@ export default {
     onPicUpload(){
       const fd = new FormData();
       fd.append('image',this.selectedPicture, this.selectedPicture.name);
-      axios.post(`${server.baseUrl}/photos/add/${1}`, fd
+      axios.post(`${server.baseUrl}/photos/add/${this.getLoginUserInfo.id}`, fd
       ).then(res=>{
         console.log(res);
         
@@ -268,29 +260,12 @@ export default {
     ...mapGetters(["singleUserFriendship"]),
     ...mapGetters(["allUserPosts"]),
     ...mapGetters(["singlePhoto"]),
-
+    ...mapGetters({
+        isAuthenticated: 'isAuthenticated',
+        getLoginUserInfo: 'getLoginUserInfo'
+      }),
   },
   created() {
-    //this.INIT_APP();
-    /*axios.interceptors.request.use(()=>{
-      this.$store.commit('READY_APP',true);
-    }, (error)=>{
-      this.$store.commit('READY_APP',false);
-
-      return Promise.reject(error);
-    });
-    axios.interceptors.response.use((response)=>{
-      console.log(response)
-      this.$store.commit('READY_APP',false);
-      return response;
-    }, (err)=>{
-      return new Promise(()=>{
-        this.$store.dispatch('login').then(()=>{
-          this.$router.push('/login')
-        })
-        throw err;
-      });
-    });*/
     let userName = this.$route.params.userName;
     this.fetchUserByUserName(userName).then((resU) => {
       this.fetchUserPhoto(resU.id).then((resP)=>{
@@ -302,12 +277,10 @@ export default {
       });
       this.fetchUserFriendship(resU.id).then((resF) => {
         if (
-          (resF === null && resU.id == 1) ||
+          (resF === null && resU.id == this.getLoginUserInfo.id) ||
           (resF !== null && resF.accepted)
         ) {
-          //umesto 1 treba username ulogovanog
           this.fetchUserPosts(resU.id);
-          //this.user2_id = resU.id;
         }
       });
     });

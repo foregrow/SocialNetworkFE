@@ -208,6 +208,7 @@ export default {
   },
   methods: {
     submitRegister(event) {
+      delete axios.defaults.headers.common["Authorization"];
       axios
         .post('http://localhost:9000/api/users/register', {
           id: 0,
@@ -219,6 +220,7 @@ export default {
           address: this.address,
           phone: this.phone,
           registerDate: Date.now(),
+        }, {
         })
         .then((res) => {
           console.log(res);
@@ -228,7 +230,7 @@ export default {
 
         })
         .catch((err) => {
-          console.log(err);
+          console.log(err.response.status);
           if(err.response.status === 400){
             document.getElementById("userName").value = null;
             alert("User name already exists! ");

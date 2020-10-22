@@ -11,15 +11,18 @@ import Friends from './components/Friends.vue'
 import Error from './components/Error.vue'
 import Vuetify from 'vuetify'
 import DateFilter from './format/date'
-//import axios from 'axios'
+import VueJwtDecode from 'vue-jwt-decode'
+import axios from 'axios';
 
+require('./store/modules/subscriber')
 Vue.use(Vuelidate)
 Vue.use(VueRouter)
 Vue.config.productionTip = false
 Vue.filter('date', DateFilter)
-
-
+Vue.use(VueJwtDecode)
 //axios.defaults.baseURL = 'http://localhost:9000/api'
+
+store.dispatch('attempt', localStorage.getItem('access_token'));
 
 const routes = [
   { path: "/register", component: Register },
@@ -68,12 +71,30 @@ const router = new VueRouter({
   mode: 'history',
 });
 
-
+/*axios.interceptors.request.use(()=>{
+  axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access_token')}`;
+}, (error)=>{
+  alert('erorcina')
+  return Promise.reject(error);
+});
+axios.interceptors.response.use((response)=>{
+  console.log(response)
+  this.$store.commit('READY_APP',false);
+  return response;
+}, (err)=>{
+  return new Promise(()=>{
+    this.$store.dispatch('login').then(()=>{
+      this.$router.push('/login')
+    })
+    throw err;
+  });
+});*/
 
 
 new Vue({
   render: h => h(App),
   router,
   store,
-  vuetify: Vuetify
+  vuetify: Vuetify,
+  axios
 }).$mount('#app')

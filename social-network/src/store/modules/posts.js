@@ -1,6 +1,6 @@
 import axios from 'axios';
 import server from '../../util/server';
-
+import VueJwtDecode from 'vue-jwt-decode';
 const state = {
   friendsPosts: [
 
@@ -17,13 +17,22 @@ const getters = {
 
 const actions = {
   async fetchUserFriendsPosts({ commit }) {
-    const response = await axios.get(`${server.baseUrl}/posts/userFriends/${server.loggedInUser}`);
+    let access_token = localStorage.getItem('access_token');
+    let decoded = VueJwtDecode.decode(access_token);
+    let id = decoded.id;
+    const response = await axios.get(`${server.baseUrl}/posts/userFriends/${id}`,
+    {headers:{
+      'Authorization' : `Bearer ${localStorage.getItem('access_token')}`
+    }});
     console.log(response.data);
 
     commit('setFriendsPosts', response.data);
   },
   async fetchUserPosts({ commit }, userId) {
-    return axios.get(`${server.baseUrl}/posts/user/${userId}`).then((res) => {
+    return axios.get(`${server.baseUrl}/posts/user/${userId}`,
+    {headers:{
+      'Authorization' : `Bearer ${localStorage.getItem('access_token')}`
+    }}).then((res) => {
       console.log(res.data);
       commit('setUserPosts',res.data);
       return res.data;
@@ -33,13 +42,19 @@ const actions = {
     });
   },
   async addPost({ commit },text){
+    let access_token = localStorage.getItem('access_token');
+    let decoded = VueJwtDecode.decode(access_token);
+    let id = decoded.id;
     let object = {
       "id":0,
       "text":text,
-      "userId":1, //loggedInUserId
+      "userId":id,
       "postDate":Date.now()
     }
-    return axios.post(`${server.baseUrl}/posts/add`,object).then((res) => {
+    return await axios.post(`${server.baseUrl}/posts/add`,object,
+    {headers:{
+      'Authorization' : `Bearer ${localStorage.getItem('access_token')}`
+    }}).then((res) => {
       console.log(res.data);
       commit('newPost',res.data);
       return res.data;

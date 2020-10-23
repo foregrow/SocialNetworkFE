@@ -37,7 +37,7 @@ const actions = {
 
     commit('setUserFriendships', response.data);
   },
-  async sendFriendshipRequest({ commit },user2_id) {
+  async sendFriendshipRequest(_,user2_id) {
     let access_token = localStorage.getItem('access_token');
     let decoded = VueJwtDecode.decode(access_token);
     let id = decoded.id;
@@ -48,14 +48,14 @@ const actions = {
       'Authorization' : `Bearer ${access_token}`
     }}).then((res) => {
       alert('Friend request successfully sent! ')
-      commit('newFriendshipRequest',res.data);
+      //commit('newFriendshipRequest',res.data);
       return res.data;
     })
     .catch((err) => {
       console.log(err);
     });
   },
-  async removeFriend({commit},user2_id){
+  async removeFriend(_,user2_id){
     let access_token = localStorage.getItem('access_token');
     let decoded = VueJwtDecode.decode(access_token);
     let user1_id = decoded.id;
@@ -64,7 +64,7 @@ const actions = {
       'Authorization' : `Bearer ${access_token}`
     }}).then((res) => {
       alert('Friend successfully removed! ')
-      commit('removeFriendship',res.data);
+      //commit('removeFriendship',res.data);
       return res.data;
     })
     .catch((err) => {
@@ -72,7 +72,7 @@ const actions = {
     });
   },
   //
-  async cancelRequest({commit},user2_id){
+  async cancelRequest(_,user2_id){
     let access_token = localStorage.getItem('access_token');
     let decoded = VueJwtDecode.decode(access_token);
     let user1_id = decoded.id;
@@ -81,7 +81,7 @@ const actions = {
       'Authorization' : `Bearer ${access_token}`
     }}).then((res) => {
       alert('Friend request successfully canceled! ')
-      commit('cancelRequest',res.data);
+      //commit('cancelRequest',res.data);
       return res.data;
     })
     .catch((err) => {
@@ -92,12 +92,12 @@ const actions = {
     let access_token = localStorage.getItem('access_token');
     let decoded = VueJwtDecode.decode(access_token);
     let user2_id = decoded.id;
-    return axios.put(`${server.baseUrl}/friendships/accept/${user1_id}/${user2_id}`,
+    return axios.get(`${server.baseUrl}/friendships/accept/${user1_id}/${user2_id}`,
     {headers:{
       'Authorization' : `Bearer ${access_token}`
     }}).then((res) => {
       alert('Friend request successfully accepted! ')
-      commit('acceptRequest',res.data);
+     commit('acceptRequest',res.data);
       return res.data;
     })
     .catch((err) => {
@@ -130,7 +130,7 @@ const mutations = {
   setUserFriendships: (state, usersFriendships) => (state.usersFriendships = usersFriendships),
   setUserFriendship: (state, userFriendship) => (state.userFriendship = userFriendship),
   newFriendshipRequest: (state, friendship) => state.userFriendship.unshift(friendship),
-  //removeFriendship: (state) => 
+  acceptRequest: ()=> {}
 };
 
 export default {

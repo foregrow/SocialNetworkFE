@@ -13,7 +13,16 @@ import Vuetify from 'vuetify'
 import DateFilter from './format/date'
 import VueJwtDecode from 'vue-jwt-decode'
 import axios from 'axios';
+import api from "./api";
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faUserSecret } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+ 
+library.add(faUserSecret)
+ 
+Vue.component('font-awesome-icon', FontAwesomeIcon)
 
+Vue.prototype.$http = api;
 require('./store/modules/subscriber')
 Vue.use(Vuelidate)
 Vue.use(VueRouter)
@@ -21,7 +30,6 @@ Vue.config.productionTip = false
 Vue.filter('date', DateFilter)
 Vue.use(VueJwtDecode)
 //axios.defaults.baseURL = 'http://localhost:9000/api'
-
 store.dispatch('attempt', localStorage.getItem('access_token'));
 
 const routes = [
@@ -30,6 +38,7 @@ const routes = [
   {
     path: "/main",
     component: Main,
+    name: 'main',
     /*beforeEnter(to, from, next) {
       let access_token = window.localStorage.access_token;
       if (access_token) {
@@ -40,29 +49,12 @@ const routes = [
     },*/
   },
   {
-    path: "/profile/:userName", component: Profile,
-    /*beforeEnter(to, from, next) {
-      let access_token = window.localStorage.access_token;
-      if (access_token) {
-        next();
-      } else {
-        next("/error")
-      }
-    },*/
+    path: "/profile/:userName", component: Profile,name: 'profile',
   },
   {
-    path: "/friends", component: Friends,
-
-    /*beforeEnter(to, from, next) {
-      let access_token = window.localStorage.access_token;
-      if (access_token) {
-        next();
-      } else {
-        next("/error")
-      }
-    },*/
+    path: "/friends", component: Friends,name: 'friends',
   },
-  { path: "/error", component: Error },
+  { path: "/error", component: Error ,name: 'error',},
   { path: "*", component: Error }
 ]
 
@@ -71,25 +63,57 @@ const router = new VueRouter({
   mode: 'history',
 });
 
-/*axios.interceptors.request.use(()=>{
-  axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access_token')}`;
-}, (error)=>{
-  alert('erorcina')
-  return Promise.reject(error);
-});
-axios.interceptors.response.use((response)=>{
-  console.log(response)
-  this.$store.commit('READY_APP',false);
-  return response;
-}, (err)=>{
-  return new Promise(()=>{
-    this.$store.dispatch('login').then(()=>{
-      this.$router.push('/login')
-    })
-    throw err;
-  });
-});*/
+Vue.prototype.$http = api;
+api.defaults.timeout = 10000; 
+api.interceptors.request.use(
+  config => {
+    const token = localStorage.getItem("access_token");
+    if (token) {
+      config.headers.common["Authorization"] = token;
+    }
+    return config;
+  },
+  error => {
+    return Promise.reject(error);
+  }
+); 
+api.interceptors.response.use(
+  response => {
+    if (response.status === 200 || response.status === 201) {
+      return Promise.resolve(response);
+    } else {
+      return Promise.reject(response);
+    }
+  }, error => {
+    if (error.response.status) {
+      switch (error.response.status) {
+        case 400:
 
+          //do something
+          break;
+
+        case 401:
+          alert("session expired");
+          break; case 403:
+          router.replace({
+            path: "/login",
+            query: { redirect: router.currentRoute.fullPath }
+          }); break; case 404:
+          alert('page not exist');
+          break; case 502:
+          setTimeout(() => {
+            router.replace({
+              path: "/login",
+              query: {
+                redirect: router.currentRoute.fullPath
+              }
+            });
+          }, 1000);
+      }
+      return Promise.reject(error.response);
+    }
+  }
+);
 
 new Vue({
   render: h => h(App),

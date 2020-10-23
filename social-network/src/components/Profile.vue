@@ -207,7 +207,7 @@ export default {
       e.preventDefault();
       console.log(user2_id);
       this.removeFriend(user2_id).then(() => {
-          //this.$router.go();
+          this.$router.go();
 
       });
     },

@@ -48,12 +48,17 @@ export default {
   },
   methods: {
     ...mapActions(["loginUser"]),
+    ...mapActions(["attempt"]),
     login() {
-      this.loginUser(this.userCred);
+      this.loginUser(this.userCred).then((res)=>{
+        this.attempt(res).then(()=>{
+          if(this.isAuthenticated && this.getLoginUserInfo){
+            this.$router.push("main");
+           }
+        })
+      });
       //alert(this.getLoginUserInfo.userName);
-      if(this.isAuthenticated && this.getLoginUserInfo){
-        this.$router.push("main");
-      }
+      
       
     }
   }

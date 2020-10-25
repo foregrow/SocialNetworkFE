@@ -29,7 +29,10 @@ const actions = {
     commit('setFriendsPosts', response.data);
   },
   async fetchUserPosts({ commit }, userId) {
-    return axios.get(`${server.baseUrl}/posts/user/${userId}`,
+    let access_token = localStorage.getItem('access_token');
+    let decoded = VueJwtDecode.decode(access_token);
+    let loggedInUserId = decoded.id;
+    return axios.get(`${server.baseUrl}/posts/user/${userId}/${loggedInUserId}`,
     {headers:{
       'Authorization' : `Bearer ${localStorage.getItem('access_token')}`
     }}).then((res) => {
@@ -49,7 +52,8 @@ const actions = {
       "id":0,
       "text":text,
       "userId":id,
-      "postDate":Date.now()
+      "postDate":Date.now(),
+      "numberOfLikes": 0
     }
     return await axios.post(`${server.baseUrl}/posts/add`,object,
     {headers:{
@@ -62,13 +66,65 @@ const actions = {
     .catch((err) => {
       console.log(err);
     });
-  }
+  },
+  addLike(_,postId){
+    let access_token = localStorage.getItem('access_token');
+    let decoded = VueJwtDecode.decode(access_token);
+    let userId = decoded.id;
+    let object = {
+      "id":0,
+      "likeSenderId":userId,
+      "postId":postId
+    }
+    return axios.post(`${server.baseUrl}/likes/add`,object,
+    {headers:{
+      'Authorization' : `Bearer ${localStorage.getItem('access_token')}`
+    }}).then((res) => {
+      return res.data;
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+  },
+  removeLike(_,postId){
+    let access_token = localStorage.getItem('access_token');
+    let decoded = VueJwtDecode.decode(access_token);
+    let userId = decoded.id;
+    return axios.delete(`${server.baseUrl}/likes/unlike/${postId}/${userId}`,
+    {headers:{
+      'Authorization' : `Bearer ${access_token}`
+    }}).then((res) => {
+      return res.data;
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+  },
+  removePost(_,postId){
+    let access_token = localStorage.getItem('access_token');
+    return axios.delete(`${server.baseUrl}/posts/${postId}`,
+    {headers:{
+      'Authorization' : `Bearer ${access_token}`
+    }}).then((res) => {
+      return res.data;
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+  },
 };
 
 const mutations = {
   setFriendsPosts: (state, friendsPosts) => (state.friendsPosts = friendsPosts),
   setUserPosts: (state, userPosts) => (state.userPosts = userPosts),
-  newPost:(state, post) => state.userPosts.unshift(post)
+  newPost:(state, post) => state.userPosts.unshift(post),
+  likeUp:(state, postId) => state.friendsPosts.array.forEach(post => {
+    if(postId==post.id){
+      post.numberOfLikes = post.numberOfLikes + 1
+    }
+    
+  })
+
 
 };
 

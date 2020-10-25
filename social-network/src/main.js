@@ -34,25 +34,41 @@ store.dispatch('attempt', localStorage.getItem('access_token'));
 
 const routes = [
   { path: "/register", component: Register },
-  { path: "/login", component: Login },
+  { path: "/login", name: 'login',component: Login },
   {
     path: "/main",
     component: Main,
     name: 'main',
-    /*beforeEnter(to, from, next) {
-      let access_token = window.localStorage.access_token;
+    beforeEnter(to, from, next) {
+      let access_token = localStorage.access_token;
       if (access_token) {
         next();
       } else {
-        next("/error")
+        next({name: "login"})
       }
-    },*/
+    },
   },
   {
     path: "/profile/:userName", component: Profile,name: 'profile',
+    beforeEnter(to, from, next) {
+      let access_token = localStorage.access_token;
+      if (access_token) {
+        next();
+      } else {
+        next({name: "login"})
+      }
+    },
   },
   {
     path: "/friends", component: Friends,name: 'friends',
+    beforeEnter(to, from, next) {
+      let access_token = localStorage.access_token;
+      if (access_token) {
+        next();
+      } else {
+        next({name: "login"})
+      }
+    },
   },
   { path: "/error", component: Error ,name: 'error',},
   { path: "*", component: Error }

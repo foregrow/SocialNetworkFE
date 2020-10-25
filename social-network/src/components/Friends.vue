@@ -6,7 +6,7 @@
         <div class="col-md-8">
           <div class="people-nearby mt-5">
             <h1 v-if="allFriends.length>0">Friend's list</h1> 
-            <h1 v-if="allFriends.length===0">Friend's list is empty</h1> 
+            <h3 v-if="allFriends.length===0">Your friend's list is empty</h3> 
             <div  
               v-for="user in allFriends"
               v-bind:key="user.id"

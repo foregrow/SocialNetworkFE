@@ -18,7 +18,7 @@
             Friends</router-link>
         </li>
         <li class="ml-5">
-          <router-link to="#" >Log out</router-link>
+          <router-link :to="{name: 'login'}" @click.native="logout" >Log out</router-link>
         </li>
       </ul>
     </div>
@@ -29,12 +29,6 @@
 import { mapGetters } from "vuex";
 export default {
   name: "Navbar",
-  data() {
-    return {
-      profile : '#',
-      logout : '#'
-    };
-  },
   computed: {
     ...mapGetters({
       isAuthenticated: "isAuthenticated",
@@ -42,7 +36,10 @@ export default {
     }),
   },
   methods: {
-    
+    logout(){
+      this.$store.dispatch('logoutUser')
+      //localStorage.setItem('access_token',null);
+    }
   }
 };
 </script>

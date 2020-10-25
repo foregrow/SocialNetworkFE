@@ -8,11 +8,8 @@
             <div class="fb-profile-block-thumb cover-container"></div>
             <div class="profile-img">
               <a href="#">
-                <img
-                  v-bind:src="imagePreview"
-                />
+                <img v-bind:src="imagePreview" />
               </a>
-
             </div>
             <div class="profile-name">
               <h2 v-if="singleUser !== undefined">
@@ -20,16 +17,23 @@
               </h2>
             </div>
 
-            <div class="fb-profile-block-menu">
+            <div v-bind:class="isToggled"  class="fb-profile-block-menu">
               <div class="block-menu">
-                <input v-if="
-                    singleUser.id == getLoginUserInfo.id
-                  " class="pull-left" type="file" accept="image/*" @change="onPicSelected">
                 <button
-                  v-if="
-                    singleUser.id == getLoginUserInfo.id
-                    && selectedPicture
-                  "
+                  @click.prevent="onToggle"
+                  class="btn btn-primary pull-left mr-3"
+                >
+                  About
+                </button>
+                <input
+                  v-if="singleUser.id == getLoginUserInfo.id"
+                  class="pull-left"
+                  type="file"
+                  accept="image/*"
+                  @change="onPicSelected"
+                />
+                <button
+                  v-if="singleUser.id == getLoginUserInfo.id && selectedPicture"
                   @click="onPicUpload"
                   class="btn btn-primary pull-left"
                 >
@@ -37,9 +41,10 @@
                 </button>
                 <button
                   v-if="
-                    singleUserFriendship === null && singleUser.id != getLoginUserInfo.id
+                    singleUserFriendship === null &&
+                    singleUser.id != getLoginUserInfo.id
                   "
-                  @click="onAddFriend($event,singleUser.id)" 
+                  @click="onAddFriend($event, singleUser.id)"
                   class="btn btn-primary pull-right"
                 >
                   Add Friend
@@ -48,10 +53,10 @@
                   v-if="
                     singleUserFriendship !== null &&
                     !singleUserFriendship.accepted &&
-                    (singleUserFriendship.user1_id===getLoginUserInfo.id && 
-                    singleUserFriendship.user2_id===singleUser.id)
+                    singleUserFriendship.user1_id === getLoginUserInfo.id &&
+                    singleUserFriendship.user2_id === singleUser.id
                   "
-                  @click="onCancelRequest($event,singleUser.id)" 
+                  @click="onCancelRequest($event, singleUser.id)"
                   class="btn btn-danger pull-right mr-1 pt-1"
                 >
                   Cancel Request
@@ -60,10 +65,10 @@
                   v-if="
                     singleUserFriendship !== null &&
                     !singleUserFriendship.accepted &&
-                    (singleUserFriendship.user2_id===getLoginUserInfo.id &&
-                    singleUserFriendship.user1_id===singleUser.id)
+                    singleUserFriendship.user2_id === getLoginUserInfo.id &&
+                    singleUserFriendship.user1_id === singleUser.id
                   "
-                  @click="onCancelRequest($event,singleUser.id)" 
+                  @click="onCancelRequest($event, singleUser.id)"
                   class="btn btn-danger pull-right ml-1mr-1 pt-1"
                 >
                   Reject Request
@@ -72,10 +77,10 @@
                   v-if="
                     singleUserFriendship !== null &&
                     !singleUserFriendship.accepted &&
-                    (singleUserFriendship.user2_id===getLoginUserInfo.id && 
-                    singleUserFriendship.user1_id===singleUser.id)
+                    singleUserFriendship.user2_id === getLoginUserInfo.id &&
+                    singleUserFriendship.user1_id === singleUser.id
                   "
-                  @click="onAcceptRequest($event,singleUser.id)" 
+                  @click="onAcceptRequest($event, singleUser.id)"
                   class="btn btn-primary pull-right mr-auto pt-1"
                 >
                   Accept Request
@@ -85,7 +90,7 @@
                     singleUserFriendship !== null &&
                     singleUserFriendship.accepted
                   "
-                  @click="onRemoveFriend($event,singleUser.id)" 
+                  @click="onRemoveFriend($event, singleUser.id)"
                   class="btn btn-danger pull-right mr-1 pt-1"
                 >
                   Remove Friend
@@ -96,66 +101,204 @@
         </div>
       </div>
     </div>
+    <div v-if="isToggled" class="col-md-12 mt-3 mb-3">
+      <div class="tab-content profile-tab" id="myTabContent">
+        <div
+          class="tab-pane fade show active"
+          id="home"
+          role="tabpanel"
+          aria-labelledby="home-tab"
+        >
+          <div class="row">
+            <div class="col-md-6">
+              <label>Username</label>
+            </div>
+            <div class="col-md-2">
+              <p>{{singleUser.userName}}</p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <label>First name</label>
+            </div>
+            <div class="col-md-2">
+              <p>{{singleUser.firstName}}</p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <label>Last name</label>
+            </div>
+            <div class="col-md-2">
+              <p>{{singleUser.lastName}}</p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <label>Phone</label>
+            </div>
+            <div class="col-md-2">
+              <p>{{singleUser.phone}}</p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <label>Email</label>
+            </div>
+            <div class="col-md-2">
+              <p>{{singleUser.email}}</p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <label>Address</label>
+            </div>
+            <div class="col-md-2">
+              <p>{{singleUser.address}}</p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <label>Register date</label>
+            </div>
+            <div class="col-md-2">
+              <p>{{singleUser.registerDate | date}}</p>
+            </div>
+          </div>
+        </div>
+        <div
+          class="tab-pane fade"
+          id="profile"
+          role="tabpanel"
+          aria-labelledby="profile-tab"
+        >
+          <div class="row">
+            <div class="col-md-6">
+              <label>Experience</label>
+            </div>
+            <div class="col-md-6">
+              <p>Expert</p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <label>Hourly Rate</label>
+            </div>
+            <div class="col-md-6">
+              <p>10$/hr</p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <label>Total Projects</label>
+            </div>
+            <div class="col-md-6">
+              <p>230</p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <label>English Level</label>
+            </div>
+            <div class="col-md-6">
+              <p>Expert</p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <label>Availability</label>
+            </div>
+            <div class="col-md-6">
+              <p>6 months</p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <label>Your Bio</label><br />
+              <p>Your detail description</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-     <div class="container mt-5" v-if="singleUser.id === getLoginUserInfo.id"> 
+    <div class="container mt-5" v-if="singleUser.id === getLoginUserInfo.id">
       <div>
         <form @submit="onAddPost($event)">
           <div class="form-group">
-              <textarea v-model="descText" placeholder="Type something here.." name="text" cols="30" rows="5" class="form-control"></textarea>
+            <textarea
+              v-model="descText"
+              placeholder="Type something here.."
+              name="text"
+              cols="30"
+              rows="5"
+              class="form-control"
+            ></textarea>
           </div>
           <div class="form-grup">
             <button type="submit" class="btn btn-primary">Post now!</button>
-           <!-- <button type="submit" class="btn btn-danger">Cancel</button> -->
-
           </div>
         </form>
       </div>
     </div>
+
     <div
       v-if="
-        (singleUserFriendship === null && singleUser.id == getLoginUserInfo.id) ||
+        (singleUserFriendship === null &&
+          singleUser.id == getLoginUserInfo.id) ||
         (singleUserFriendship !== null && singleUserFriendship.accepted)
       "
       class="container mt-5"
     >
-      <div class="col-md-12">
-        <div class="panel panel-default posts mt-3">
-          <div
-            v-for="post in allUserPosts"
-            v-bind:key="post.id"
-            class="panel-body post mt-3"
-          >
-            <section class="post-heading">
-              <div class="row">
-                <div class="col-md-11">
-                  <div class="media">
-                    <div class="media-body">
-                      <a href="#" class="anchor-time">{{ post.postDate| date }}</a>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-md-1">
-                  <a href="#"
-                    ><i class="glyphicon glyphicon-chevron-down"></i
-                  ></a>
-                </div>
-              </div>
-            </section>
-            <section class="post-body">
-              <p>{{ post.text }}</p>
-            </section>
-            <section class="post-footer">
-              <hr />
-              <div class="post-footer-option container">
-                <ul class="list-unstyled">
-                  <li>
-                    <a href="#"
-                      ><i class="glyphicon glyphicon-thumbs-up"></i> Like</a
-                    >
-                  </li>
-                </ul>
-              </div>
-            </section>
+      <div
+        v-for="post in allUserPosts"
+        v-bind:key="post.id"
+        class="panel-body post mt-3"
+      >
+        <div class="media">
+          <a class="pull-left" href="#">
+            <img class="rounded img" src="../../public/blogpost.png" />
+          </a>
+          <div class="media-body">
+            <p class="pt-5">
+              {{ post.text }}
+            </p>
+            <ul class="list-inline list-unstyled">
+              <li>
+                <span
+                  ><i class="fa fa-clock-o" aria-hidden="true"></i>
+                  {{ post.postDate | date }}
+                </span>
+              </li>
+              <li>|</li>
+
+              <i
+                v-if="post.loggedInUserLiked"
+                @click.prevent="onLike(post)"
+                class="fa fa-thumbs-up imglike"
+                :id="post.id"
+                aria-hidden="true"
+              >
+                {{ post.numberOfLikes }}</i
+              >
+              <i
+                v-if="!post.loggedInUserLiked"
+                @click.prevent="onLike(post)"
+                class="fa fa-thumbs-o-up imglike"
+                :id="post.id"
+                aria-hidden="true"
+              >
+                {{ post.numberOfLikes }}</i
+              >
+              <p>likes</p>
+              <li>|</li>
+              <i
+                v-if="singleUser.id == getLoginUserInfo.id"
+                class="fa fa-trash"
+                @click.prevent="onDeletePost(post.id)"
+                aria-hidden="true"
+              ></i>
+            </ul>
           </div>
         </div>
       </div>
@@ -169,21 +312,21 @@ import Navbar from "./navbar/Navbar";
 //import Loader from "../components/loader/Loader";
 
 import { mapGetters, mapActions } from "vuex";
-import server from '../util/server';
-import axios from 'axios';
+import server from "../util/server";
+import axios from "axios";
 
 export default {
   name: "Profile",
   components: {
     Navbar: Navbar,
   },
-  data(){
+  data() {
     return {
-      descText:"",
+      descText: "",
       selectedPicture: null,
       imagePreview: "https://bootdey.com/img/Content/avatar/avatar7.png",
-
-    }
+      isToggled :false
+    };
   },
   methods: {
     ...mapActions(["fetchUserByUserName"]),
@@ -195,65 +338,92 @@ export default {
     ...mapActions(["acceptRequest"]),
     ...mapActions(["addPost"]),
     ...mapActions(["fetchUserPhoto"]),
-    
-    onAddFriend(e,user2_id){
-      e.preventDefault();
-        this.sendFriendshipRequest(user2_id).then(() => {
-          this.$router.go();
+    ...mapActions(["removeLike"]),
+    ...mapActions(["addLike"]),
+    ...mapActions(["removePost"]),
 
+    onToggle(){
+      if(!this.isToggled)
+        this.isToggled=true;
+      else
+        this.isToggled=false;
+    },
+    onAddFriend(e, user2_id) {
+      e.preventDefault();
+      this.sendFriendshipRequest(user2_id).then(() => {
+        this.$router.go();
       });
     },
-    onRemoveFriend(e,user2_id){
+    onRemoveFriend(e, user2_id) {
       e.preventDefault();
       console.log(user2_id);
       this.removeFriend(user2_id).then(() => {
-          this.$router.go();
-
+        this.$router.go();
       });
     },
-    onCancelRequest(e,user2_id){
+    onCancelRequest(e, user2_id) {
       e.preventDefault();
       this.cancelRequest(user2_id).then(() => {
-          this.$router.go();
-
+        this.$router.go();
       });
     },
-    onAcceptRequest(e,user1_id){
+    onAcceptRequest(e, user1_id) {
       e.preventDefault();
       this.acceptRequest(user1_id).then(() => {
-          this.$router.go();
-
+        this.$router.go();
       });
     },
-    onAddPost(e){
+    onAddPost(e) {
       e.preventDefault();
       this.addPost(this.descText);
       this.$router.go();
     },
-    onPicSelected(e){
+    onPicSelected(e) {
       this.selectedPicture = e.target.files[0];
     },
-    onPicUpload(){
+    onPicUpload() {
       const fd = new FormData();
-      fd.append('image',this.selectedPicture, this.selectedPicture.name);
-      axios.post(`${server.baseUrl}/photos/add/${this.getLoginUserInfo.id}`, fd
-      ).then(res=>{
-        console.log(res);
-        
-        if(res!==undefined){
-          this.fetchUserPhoto(this.singleUser.id).then((resP)=>{
+      fd.append("image", this.selectedPicture, this.selectedPicture.name);
+      axios
+        .post(`${server.baseUrl}/photos/add/${this.getLoginUserInfo.id}`, fd)
+        .then((res) => {
+          console.log(res);
 
-          if(resP!==undefined)
-            this.imagePreview = resP.path
-            this.$router.go();
-          });
-        }
-      }).catch(err=>{
-        console.log(err);
+          if (res !== undefined) {
+            this.fetchUserPhoto(this.singleUser.id).then((resP) => {
+              if (resP !== undefined) this.imagePreview = resP.path;
+              this.$router.go();
+            });
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    onLike(post) {
+      let like = document.getElementById(`${post.id}`);
+      let likeInner = document.getElementById(`${post.id}`).innerHTML;
+      if (like.classList.contains("fa-thumbs-o-up")) {
+        like.classList.remove("fa-thumbs-o-up");
+        like.classList.add("fa-thumbs-up");
+        likeInner++;
+        document.getElementById(`${post.id}`).innerHTML = likeInner;
+        this.addLike(post.id);
+      } else if (like.classList.contains("fa-thumbs-up")) {
+        like.classList.remove("fa-thumbs-up");
+        like.classList.add("fa-thumbs-o-up");
+        likeInner--;
+        document.getElementById(`${post.id}`).innerHTML = likeInner;
+        this.removeLike(post.id);
+      }
+    },
+    onDeletePost(postId) {
+      this.removePost(postId).then(() => {
+        this.$router.go();
       });
     },
   },
-  
+
   computed: {
     //...mapGetters(["appReady"]),
     ...mapGetters(["singleUser"]),
@@ -261,20 +431,20 @@ export default {
     ...mapGetters(["allUserPosts"]),
     ...mapGetters(["singlePhoto"]),
     ...mapGetters({
-        isAuthenticated: 'isAuthenticated',
-        getLoginUserInfo: 'getLoginUserInfo'
-      }),
+      isAuthenticated: "isAuthenticated",
+      getLoginUserInfo: "getLoginUserInfo",
+    }),
   },
   created() {
     let userName = this.$route.params.userName;
     this.fetchUserByUserName(userName).then((resU) => {
-      this.fetchUserPhoto(resU.id).then((resP)=>{
-
-        if(resP!==undefined)
-          this.imagePreview = resP.path
-      }).catch((e)=>{
-        console.log(e);
-      });
+      this.fetchUserPhoto(resU.id)
+        .then((resP) => {
+          if (resP !== undefined) this.imagePreview = resP.path;
+        })
+        .catch((e) => {
+          console.log(e);
+        });
       this.fetchUserFriendship(resU.id).then((resF) => {
         if (
           (resF === null && resU.id == this.getLoginUserInfo.id) ||
@@ -289,6 +459,19 @@ export default {
 </script>
 
 <style scoped>
+.rounded {
+  height: 150px;
+  width: 200px;
+}
+
+.imglike:hover {
+  font-style: italic;
+  cursor: pointer;
+}
+.fa-trash:hover {
+  font-style: italic;
+  cursor: pointer;
+}
 .fb-profile-block {
   position: relative;
   width: 100%;
@@ -385,5 +568,15 @@ export default {
   height: 100%;
   top: 0;
   left: 0;
+}
+
+
+
+.profile-tab label{
+    font-weight: 600;
+}
+.profile-tab p{
+    font-weight: 600;
+    color: #0062cc;
 }
 </style>

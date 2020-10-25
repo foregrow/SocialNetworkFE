@@ -36,11 +36,11 @@ const getters = {
 
 const actions = {
   
-   async loginUser({ dispatch },userCred){
+   async loginUser(_,userCred){
     delete axios.defaults.headers.common["Authorization"];
-    await axios.post(`${server.base}/authenticate`,userCred).then(res=>{
-      dispatch('attempt',res.data.access_token);
-
+    return await axios.post(`${server.base}/authenticate`,userCred).then(res=>{
+      //dispatch('attempt',res.data.access_token);
+      return res.data.access_token;
     }).catch(err=>{
       if(err.response.status === 400){
         alert("Wrong username or password! ");
@@ -64,7 +64,9 @@ const actions = {
       commit('setLoginUserInfo',null)
 
     }
+    
   },
+
   
   async fetchUsersFriends({ commit }){
     let access_token = localStorage.getItem('access_token');
@@ -104,7 +106,9 @@ const actions = {
     
   },
 
-
+  logoutUser({commit}) {
+      commit('logout');
+  }
 };
 
 const mutations = {
@@ -120,6 +124,10 @@ const mutations = {
   },
   setLoginUserInfo(state,data){
     state.loginUserInfo = data
+  },
+  logout: (state) =>{
+    localStorage.removeItem('access_token');
+    state.access_token = null;
   }
 };
 

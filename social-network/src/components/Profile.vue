@@ -17,7 +17,7 @@
               </h2>
             </div>
 
-            <div v-bind:class="isToggled"  class="fb-profile-block-menu">
+            <div v-bind:class="isToggled" class="fb-profile-block-menu">
               <div class="block-menu">
                 <button
                   @click.prevent="onToggle"
@@ -114,7 +114,7 @@
               <label>Username</label>
             </div>
             <div class="col-md-2">
-              <p>{{singleUser.userName}}</p>
+              <p>{{ singleUser.userName }}</p>
             </div>
           </div>
           <div class="row">
@@ -122,7 +122,7 @@
               <label>First name</label>
             </div>
             <div class="col-md-2">
-              <p>{{singleUser.firstName}}</p>
+              <p>{{ singleUser.firstName }}</p>
             </div>
           </div>
           <div class="row">
@@ -130,7 +130,7 @@
               <label>Last name</label>
             </div>
             <div class="col-md-2">
-              <p>{{singleUser.lastName}}</p>
+              <p>{{ singleUser.lastName }}</p>
             </div>
           </div>
           <div class="row">
@@ -138,7 +138,7 @@
               <label>Phone</label>
             </div>
             <div class="col-md-2">
-              <p>{{singleUser.phone}}</p>
+              <p>{{ singleUser.phone }}</p>
             </div>
           </div>
           <div class="row">
@@ -146,7 +146,7 @@
               <label>Email</label>
             </div>
             <div class="col-md-2">
-              <p>{{singleUser.email}}</p>
+              <p>{{ singleUser.email }}</p>
             </div>
           </div>
           <div class="row">
@@ -154,7 +154,7 @@
               <label>Address</label>
             </div>
             <div class="col-md-2">
-              <p>{{singleUser.address}}</p>
+              <p>{{ singleUser.address }}</p>
             </div>
           </div>
           <div class="row">
@@ -162,7 +162,7 @@
               <label>Register date</label>
             </div>
             <div class="col-md-2">
-              <p>{{singleUser.registerDate | date}}</p>
+              <p>{{ singleUser.registerDate | date }}</p>
             </div>
           </div>
         </div>
@@ -298,6 +298,67 @@
                 @click.prevent="onDeletePost(post.id)"
                 aria-hidden="true"
               ></i>
+              <li>|</li>
+              <i
+                class="far fa-comment-dots"
+                aria-hidden="true"
+                @click.prevent="onShowComments(post)"
+              >
+                toggle comments</i
+              >
+              <li>|</li>
+              <form @submit.prevent="onAddComment(post.id)" class="mb-5">
+                <div class="form-group">
+                  <textarea
+                    v-model="commentContent"
+                    placeholder="Type comment here.."
+                    name="text"
+                    cols="15"
+                    rows="3"
+                    class="form-control"
+                  ></textarea>
+                </div>
+                <div class="form-group">
+                  <button type="submit" class="btn btn-primary">
+                    Add comment
+                  </button>
+                </div>
+              </form>
+              <div :id="`${post.id}c`" class="container mt-1 mb-3">
+                <div
+                  v-for="comment in allPostComments"
+                  v-bind:key="comment.id"
+                  class="well panel-body post mb-3"
+                >
+                  <div
+                    v-if="comment.postId === post.id"
+                    class="container mt-1 mb-5"
+                  >
+                    <div class="media comment-box">
+                      <div class="media-left">
+                        <a href="#">
+                          <img
+                            class="img-responsive user-photo"
+                            src="../../public/userphoto.png"
+                          />
+                        </a>
+                      </div>
+                      <div class="media-body ml-5 mr-5">
+                        <h4 class="media-heading">
+                          {{ comment.commentSenderUserName }}
+                        </h4>
+                        <p>
+                          {{ comment.content }}
+                        </p>
+                        <span
+                          ><i class="fa fa-clock-o" aria-hidden="true"></i>
+                          {{ comment.commentDate | date }}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </ul>
           </div>
         </div>
@@ -325,28 +386,62 @@ export default {
       descText: "",
       selectedPicture: null,
       imagePreview: "https://bootdey.com/img/Content/avatar/avatar7.png",
-      isToggled :false
+      isToggled: false,
+      firstToggle: false,
+      allComments: [],
+      commentContent: "",
     };
   },
   methods: {
-    ...mapActions(["fetchUserByUserName"]),
-    ...mapActions(["fetchUserFriendship"]),
-    ...mapActions(["fetchUserPosts"]),
-    ...mapActions(["sendFriendshipRequest"]),
-    ...mapActions(["removeFriend"]),
-    ...mapActions(["cancelRequest"]),
-    ...mapActions(["acceptRequest"]),
-    ...mapActions(["addPost"]),
-    ...mapActions(["fetchUserPhoto"]),
-    ...mapActions(["removeLike"]),
-    ...mapActions(["addLike"]),
-    ...mapActions(["removePost"]),
+    ...mapActions([
+      "fetchUserByUserName",
+      "fetchUserFriendship",
+      "fetchUserPosts",
+      "sendFriendshipRequest",
+      "removeFriend",
+      "cancelRequest",
+      "acceptRequest",
+      "addPost",
+      "fetchUserPhoto",
+      "removeLike",
+      "addLike",
+      "removePost",
+      "fetchPostComments",
+      "addComment",
+    ]),
 
-    onToggle(){
-      if(!this.isToggled)
-        this.isToggled=true;
-      else
-        this.isToggled=false;
+    onAddComment(postId) {
+      let obj = {
+        content: this.commentContent,
+        postId: postId,
+      };
+      this.addComment(obj)
+        .then((res) => {
+          console.log(res.data);
+          this.commentContent = "";
+        })
+        .catch((e) => {
+          console.log(e);
+        });
+    },
+    onShowComments(post) {
+      let comm = document.getElementById(`${post.id}c`);
+      if (!this.firstToggle) {
+        comm.style.display = "block";
+        this.fetchPostComments(post.id);
+        this.firstToggle = true;
+      } else {
+        if (comm.style.display === "none") {
+          comm.style.display = "block";
+          this.fetchPostComments(post.id);
+        } else {
+          comm.style.display = "none";
+        }
+      }
+    },
+    onToggle() {
+      if (!this.isToggled) this.isToggled = true;
+      else this.isToggled = false;
     },
     onAddFriend(e, user2_id) {
       e.preventDefault();
@@ -425,11 +520,13 @@ export default {
   },
 
   computed: {
-    //...mapGetters(["appReady"]),
-    ...mapGetters(["singleUser"]),
-    ...mapGetters(["singleUserFriendship"]),
-    ...mapGetters(["allUserPosts"]),
-    ...mapGetters(["singlePhoto"]),
+    ...mapGetters([
+      "singleUser",
+      "singleUserFriendship",
+      "allUserPosts",
+      "singlePhoto",
+      "allPostComments"
+    ]),
     ...mapGetters({
       isAuthenticated: "isAuthenticated",
       getLoginUserInfo: "getLoginUserInfo",
@@ -570,13 +667,55 @@ export default {
   left: 0;
 }
 
-
-
-.profile-tab label{
-    font-weight: 600;
+.fa-comment-dots:hover {
+  cursor: pointer;
 }
-.profile-tab p{
-    font-weight: 600;
-    color: #0062cc;
+.profile-tab label {
+  font-weight: 600;
+}
+.profile-tab p {
+  font-weight: 600;
+  color: #0062cc;
+}
+
+.comment-box {
+  margin-top: 30px !important;
+}
+/* CSS Test end */
+
+.comment-box img {
+  width: 50px;
+  height: 50px;
+}
+.comment-box .media-left {
+  padding-right: 10px;
+  width: 65px;
+}
+.comment-box .media-body p {
+  border: 1px solid #ddd;
+  padding: 10px;
+}
+.comment-box .media-body .media p {
+  margin-bottom: 0;
+}
+.comment-box .media-heading {
+  background-color: #f5f5f5;
+  border: 1px solid #ddd;
+  padding: 7px 10px;
+  position: relative;
+  margin-bottom: -1px;
+}
+.comment-box .media-heading:before {
+  content: "";
+  width: 12px;
+  height: 12px;
+  background-color: #f5f5f5;
+  border: 1px solid #ddd;
+  border-width: 1px 0 0 1px;
+  -webkit-transform: rotate(-45deg);
+  transform: rotate(-45deg);
+  position: absolute;
+  top: 10px;
+  left: -6px;
 }
 </style>

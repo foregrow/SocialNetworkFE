@@ -47,8 +47,7 @@ export default {
       }),
   },
   methods: {
-    ...mapActions(["loginUser"]),
-    ...mapActions(["attempt"]),
+    ...mapActions(["loginUser","attempt"]),
     login() {
       this.loginUser(this.userCred).then((res)=>{
         this.attempt(res).then(()=>{
@@ -57,7 +56,6 @@ export default {
            }
         })
       });
-      //alert(this.getLoginUserInfo.userName);
       
       
     }

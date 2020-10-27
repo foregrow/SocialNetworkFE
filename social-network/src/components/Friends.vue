@@ -93,25 +93,18 @@ export default {
     Navbar: Navbar,
   },
   methods: {
-    ...mapActions(["fetchUsersFriends"]),
-    ...mapActions(["fetchUsersSuggestedFriends"]),
-    ...mapActions(["fetchUserByUserName"]),
-    //...mapActions(["fetchUserFriendships"]),
+    ...mapActions(["fetchUsersFriends","fetchUsersSuggestedFriends","fetchUserByUserName"]),
     onProfileClick(userName){
       this.fetchUserByUserName(userName);
       this.$router.push(`/profile/${userName}`).catch(()=>{});
     }
   },
   computed: {
-    ...mapGetters(["allFriends"]),
-    ...mapGetters(["allSuggestedFriends"]),
-    //...mapGetters(["allUsersFriendships"]),
-    ...mapGetters(["singleUser"]),
+    ...mapGetters(["allFriends","allSuggestedFriends","singleUser"]),
   },
   created() {
     this.fetchUsersFriends();
     this.fetchUsersSuggestedFriends();
-    //this.fetchUserFriendships();
     
   },
 };
